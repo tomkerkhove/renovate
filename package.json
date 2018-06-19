@@ -88,7 +88,7 @@
     "markdown-it": "8.4.1",
     "minimatch": "3.0.4",
     "moment": "2.22.2",
-    "moment-timezone": "0.5.17",
+    "moment-timezone": "0.5.20",
     "npm": "6.1.0",
     "openpgp": "2.6.2",
     "p-all": "1.0.0",
@@ -107,7 +107,6 @@
     "upath": "1.1.0",
     "validator": "10.3.0",
     "vso-node-api": "6.5.0",
-    "xregexp": "4.2.0",
     "yarn": "1.7.0"
   },
   "devDependencies": {
@@ -125,7 +124,7 @@
     "mockdate": "2.0.2",
     "nock": "9.3.3",
     "prettier": "1.13.5",
-    "semantic-release": "15.5.4"
+    "semantic-release": "15.5.5"
   },
   "files": [
     "bin/config-validator.js",
