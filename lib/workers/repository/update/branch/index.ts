@@ -49,7 +49,11 @@ import { getUpdatedPackageFiles } from './get-updated';
 import { handleClosedPr, handleModifiedPr } from './handle-existing';
 import { shouldReuseExistingBranch } from './reuse';
 import { isScheduledNow } from './schedule';
-import { setConfidence, setStability, setMinorStability } from './status-checks';
+import {
+  setConfidence,
+  setStability,
+  setMinorStability,
+} from './status-checks';
 
 async function rebaseCheck(
   config: RenovateConfig,
@@ -440,7 +444,8 @@ export async function processBranch(
       if (
         !dependencyDashboardCheck &&
         !branchExists &&
-        (config.stabilityStatus === 'yellow' || config.minorStabilityStatus === 'yellow') &&
+        (config.stabilityStatus === 'yellow' ||
+          config.minorStabilityStatus === 'yellow') &&
         ['not-pending', 'status-success'].includes(config.prCreation!)
       ) {
         logger.debug(

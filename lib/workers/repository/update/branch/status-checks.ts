@@ -97,7 +97,9 @@ export interface MinorStabilityConfig extends RenovateConfig {
   branchName: string;
 }
 
-export async function setMinorStability(config: MinorStabilityConfig): Promise<void> {
+export async function setMinorStability(
+  config: MinorStabilityConfig,
+): Promise<void> {
   if (!config.minorStabilityStatus) {
     return;
   }

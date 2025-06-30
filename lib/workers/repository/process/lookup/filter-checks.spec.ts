@@ -310,7 +310,7 @@ describe('workers/repository/process/lookup/filter-checks', () => {
       config.minimumMinorAge = '1 day';
       config.currentVersion = '1.0.0';
       const res = await filterInternalChecks(
-        config,  
+        config,
         versioning,
         'patch',
         sortedReleases,

@@ -65,8 +65,12 @@ export async function filterInternalChecks(
       candidateRelease = updatedCandidateRelease;
 
       // Now check for a minimumReleaseAge config
-      const { minimumConfidence, minimumReleaseAge, minimumMinorAge, updateType } =
-        releaseConfig;
+      const {
+        minimumConfidence,
+        minimumReleaseAge,
+        minimumMinorAge,
+        updateType,
+      } = releaseConfig;
       if (
         is.nonEmptyString(minimumReleaseAge) &&
         candidateRelease.releaseTimestamp

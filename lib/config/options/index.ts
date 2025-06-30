@@ -1902,7 +1902,8 @@ const options: RenovateOptions[] = [
   },
   {
     name: 'minimumMinorAge',
-    description: 'Time required before a new minor release is considered stable.',
+    description:
+      'Time required before a new minor release is considered stable.',
     type: 'string',
     default: null,
   },
