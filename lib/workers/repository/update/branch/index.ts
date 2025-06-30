@@ -51,8 +51,8 @@ import { shouldReuseExistingBranch } from './reuse';
 import { isScheduledNow } from './schedule';
 import {
   setConfidence,
-  setStability,
   setMinorStability,
+  setStability,
 } from './status-checks';
 
 async function rebaseCheck(
