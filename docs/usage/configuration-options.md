@@ -2761,8 +2761,6 @@ This pending check prevents the branch going green to automerge before the time 
 
 <!-- markdownlint-enable MD001 -->
 
-
-
 ## minor
 
 Add to this object if you wish to define rules that apply only to minor updates.
