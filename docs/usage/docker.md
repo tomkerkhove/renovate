@@ -393,6 +393,7 @@ If you have dependencies on Google Container Registry (and Artifact Registry) yo
 
 1. Base64 encode the prefixed service account credentials by running `cat prefixed-service-account.json | base64`
 1. Add the prefixed and encoded service account to your configuration file
+
    1. If you want to add it to your self-hosted configuration file:
 
       ```json
