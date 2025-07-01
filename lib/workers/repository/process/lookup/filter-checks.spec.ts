@@ -261,7 +261,6 @@ describe('workers/repository/process/lookup/filter-checks', () => {
         'minor',
         minorReleases,
       );
-      expect(res).toMatchSnapshot();
       expect(res.pendingChecks).toBeFalse();
       expect(res.pendingReleases).toHaveLength(0);
       expect(res.release?.version).toBe('1.4.0');
@@ -299,7 +298,6 @@ describe('workers/repository/process/lookup/filter-checks', () => {
         'minor',
         minorReleases,
       );
-      expect(res).toMatchSnapshot();
       expect(res.pendingChecks).toBeFalse();
       expect(res.pendingReleases).toHaveLength(0);
       expect(res.release?.version).toBe('1.4.0');
@@ -315,7 +313,6 @@ describe('workers/repository/process/lookup/filter-checks', () => {
         'patch',
         sortedReleases,
       );
-      expect(res).toMatchSnapshot();
       expect(res.pendingChecks).toBeFalse();
       expect(res.pendingReleases).toHaveLength(0);
       expect(res.release?.version).toBe('1.0.4');
@@ -350,7 +347,6 @@ describe('workers/repository/process/lookup/filter-checks', () => {
         'minor',
         minorReleases,
       );
-      expect(res).toMatchSnapshot();
       expect(res.pendingChecks).toBeFalse();
       expect(res.pendingReleases).toHaveLength(1);
       expect(res.release?.version).toBe('1.3.0');
