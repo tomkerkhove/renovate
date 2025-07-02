@@ -25,12 +25,6 @@ exports[`workers/repository/process/lookup/filter-checks > .filterInternalChecks
 }
 `;
 
-
-
-
-
-
-
 exports[`workers/repository/process/lookup/filter-checks > .filterInternalChecks() > picks up minimumReleaseAge settings from hostRules 1`] = `
 {
   "pendingChecks": false,
