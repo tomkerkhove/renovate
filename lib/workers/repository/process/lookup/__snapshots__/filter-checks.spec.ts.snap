@@ -1,6 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-
 exports[`workers/repository/process/lookup/filter-checks > .filterInternalChecks() > picks up minimumConfidence settings from updateType 1`] = `
 {
   "pendingChecks": false,
