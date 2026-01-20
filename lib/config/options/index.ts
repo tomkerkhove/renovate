@@ -353,6 +353,7 @@ const options: RenovateOptions[] = [
       configValidation: 'renovate/config-validation',
       mergeConfidence: 'renovate/merge-confidence',
       minimumReleaseAge: 'renovate/stability-days',
+      minimumMinorAge: 'renovate/minimum-minor-age',
     },
   },
   {
