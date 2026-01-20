@@ -52,6 +52,8 @@ export async function filterInternalChecks(
     };
 
     // Build a map of minor versions to their first release timestamp for minimumMinorAge
+    // Note: sortedReleases is in ascending order (lowest to highest version),
+    // so the first occurrence of each minor version is its earliest release
     const minorVersionFirstRelease = new Map<string, Release>();
     for (const rel of sortedReleases) {
       const major = versioningApi.getMajor(rel.version);
@@ -149,7 +151,7 @@ export async function filterInternalChecks(
       if (minimumMinorAgeMs) {
         const major = versioningApi.getMajor(candidateRelease.version);
         const minor = versioningApi.getMinor(candidateRelease.version);
-        
+
         if (major !== null && minor !== null) {
           const minorKey = `${major}.${minor}`;
           const firstReleaseOfMinor = minorVersionFirstRelease.get(minorKey);
