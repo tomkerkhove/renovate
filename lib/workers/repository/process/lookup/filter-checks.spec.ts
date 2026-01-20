@@ -336,5 +336,164 @@ describe('workers/repository/process/lookup/filter-checks', () => {
       expect(res.pendingReleases).toHaveLength(3);
       expect(res.release?.version).toBe('1.0.1');
     });
+
+    it('filters releases based on minimumMinorAge - minor not mature', async () => {
+      dateUtil.getElapsedMs.mockReset();
+      // Mock elapsed time for the first release of each minor version
+      // 1.0.0 - 31 days old (matured)
+      dateUtil.getElapsedMs.mockReturnValueOnce(toMs('31 days') ?? 0);
+      // 1.1.0 - 1 day old (not matured)
+      dateUtil.getElapsedMs.mockReturnValueOnce(toMs('1 day') ?? 0);
+
+      const releasesWithMinorVersions: Release[] = [
+        {
+          version: '1.0.0',
+          releaseTimestamp: '2021-07-01T00:00:00.000Z' as Timestamp,
+        },
+        {
+          version: '1.1.0',
+          releaseTimestamp: '2021-08-01T00:00:00.000Z' as Timestamp,
+        },
+        {
+          version: '1.1.1',
+          releaseTimestamp: '2021-08-02T00:00:00.000Z' as Timestamp,
+        },
+        {
+          version: '1.1.3',
+          releaseTimestamp: '2021-08-08T00:00:00.000Z' as Timestamp,
+        },
+      ];
+
+      config.internalChecksFilter = 'strict';
+      config.minimumMinorAge = '7 days';
+      const res = await filterInternalChecks(
+        config,
+        versioning,
+        'minor',
+        releasesWithMinorVersions,
+      );
+      expect(res.pendingChecks).toBeFalse();
+      expect(res.pendingReleases).toHaveLength(3);
+      expect(res.release?.version).toBe('1.0.0');
+    });
+
+    it('filters releases based on minimumMinorAge - minor is mature', async () => {
+      dateUtil.getElapsedMs.mockReset();
+      // Mock elapsed time for the first release of each minor version
+      // 1.0.0 - 40 days old (matured)
+      dateUtil.getElapsedMs.mockReturnValueOnce(toMs('40 days') ?? 0);
+      // 1.1.0 - 8 days old (matured)
+      dateUtil.getElapsedMs.mockReturnValueOnce(toMs('8 days') ?? 0);
+
+      const releasesWithMinorVersions: Release[] = [
+        {
+          version: '1.0.0',
+          releaseTimestamp: '2021-07-01T00:00:00.000Z' as Timestamp,
+        },
+        {
+          version: '1.1.0',
+          releaseTimestamp: '2021-08-01T00:00:00.000Z' as Timestamp,
+        },
+        {
+          version: '1.1.1',
+          releaseTimestamp: '2021-08-02T00:00:00.000Z' as Timestamp,
+        },
+        {
+          version: '1.1.3',
+          releaseTimestamp: '2021-08-08T00:00:00.000Z' as Timestamp,
+        },
+      ];
+
+      config.internalChecksFilter = 'strict';
+      config.minimumMinorAge = '7 days';
+      const res = await filterInternalChecks(
+        config,
+        versioning,
+        'minor',
+        releasesWithMinorVersions,
+      );
+      expect(res.pendingChecks).toBeFalse();
+      expect(res.pendingReleases).toHaveLength(0);
+      expect(res.release?.version).toBe('1.1.3');
+    });
+
+    it('filters releases with minimumMinorAge when first release has no timestamp and minimumReleaseAgeBehaviour=timestamp-required', async () => {
+      const releasesWithMissingTimestamp: Release[] = [
+        {
+          version: '1.0.0',
+          releaseTimestamp: '2021-07-01T00:00:00.000Z' as Timestamp,
+        },
+        {
+          version: '1.1.0',
+          // no releaseTimestamp
+        },
+        {
+          version: '1.1.1',
+          releaseTimestamp: '2021-08-02T00:00:00.000Z' as Timestamp,
+        },
+        {
+          version: '1.1.3',
+          releaseTimestamp: '2021-08-08T00:00:00.000Z' as Timestamp,
+        },
+      ];
+
+      config.internalChecksFilter = 'strict';
+      config.minimumMinorAge = '7 days';
+      config.minimumReleaseAgeBehaviour = 'timestamp-required';
+      const res = await filterInternalChecks(
+        config,
+        versioning,
+        'minor',
+        releasesWithMissingTimestamp,
+      );
+      expect(res.pendingChecks).toBeFalse();
+      expect(res.pendingReleases).toHaveLength(3);
+      expect(res.release?.version).toBe('1.0.0');
+    });
+
+    it('allows minimumMinorAge and minimumReleaseAge to work together', async () => {
+      dateUtil.getElapsedMs.mockReset();
+      // Mock elapsed time checks
+      // For minimumMinorAge - 1.0.0 first release
+      dateUtil.getElapsedMs.mockReturnValueOnce(toMs('40 days') ?? 0);
+      // For minimumMinorAge - 1.1.0 first release
+      dateUtil.getElapsedMs.mockReturnValueOnce(toMs('10 days') ?? 0);
+      // For minimumReleaseAge - 1.1.3 individual release
+      dateUtil.getElapsedMs.mockReturnValueOnce(toMs('3 days') ?? 0);
+      // For minimumReleaseAge - 1.1.1 individual release
+      dateUtil.getElapsedMs.mockReturnValueOnce(toMs('9 days') ?? 0);
+
+      const releasesWithBothChecks: Release[] = [
+        {
+          version: '1.0.0',
+          releaseTimestamp: '2021-07-01T00:00:00.000Z' as Timestamp,
+        },
+        {
+          version: '1.1.0',
+          releaseTimestamp: '2021-08-01T00:00:00.000Z' as Timestamp,
+        },
+        {
+          version: '1.1.1',
+          releaseTimestamp: '2021-08-02T00:00:00.000Z' as Timestamp,
+        },
+        {
+          version: '1.1.3',
+          releaseTimestamp: '2021-08-08T00:00:00.000Z' as Timestamp,
+        },
+      ];
+
+      config.internalChecksFilter = 'strict';
+      config.minimumMinorAge = '7 days'; // Minor 1.1.x is mature (10 days)
+      config.minimumReleaseAge = '5 days'; // But 1.1.3 is only 3 days old
+      const res = await filterInternalChecks(
+        config,
+        versioning,
+        'minor',
+        releasesWithBothChecks,
+      );
+      expect(res.pendingChecks).toBeFalse();
+      expect(res.pendingReleases).toHaveLength(1);
+      expect(res.release?.version).toBe('1.1.1');
+    });
   });
 });

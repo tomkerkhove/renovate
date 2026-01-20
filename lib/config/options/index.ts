@@ -2019,6 +2019,13 @@ const options: RenovateOptions[] = [
     allowedValues: ['timestamp-required', 'timestamp-optional'],
   },
   {
+    name: 'minimumMinorAge',
+    description:
+      'Time required before a new minor version is considered stable. Only the latest patch version of a matured minor version will be suggested.',
+    type: 'string',
+    default: null,
+  },
+  {
     name: 'abandonmentThreshold',
     description:
       'Flags packages that have not been updated within this period as abandoned.',
