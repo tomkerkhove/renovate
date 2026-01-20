@@ -179,14 +179,16 @@ export async function filterInternalChecks(
             );
             pendingReleases.unshift(candidateRelease);
             continue;
+          } else if (
+            isNullOrUndefined(firstReleaseOfMinor?.releaseTimestamp) &&
+            releaseConfig.minimumReleaseAgeBehaviour === 'timestamp-optional'
+          ) {
+            // Allow it even without a timestamp
+            logger.trace(
+              { depName, check: 'minimumMinorAge' },
+              `Minor version ${minorKey} does not have a releaseTimestamp, but proceeding with timestamp-optional`,
+            );
           }
-        }
-      }
-          minimumReleaseAgeBehaviour === 'timestamp-optional'
-        ) {
-          candidateVersionsWithoutReleaseTimestamp[
-            minimumReleaseAgeBehaviour
-          ].push(candidateRelease.version);
         }
       }
 
