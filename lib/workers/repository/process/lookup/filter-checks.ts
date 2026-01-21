@@ -95,8 +95,12 @@ export async function filterInternalChecks(
       candidateRelease = updatedCandidateRelease;
 
       // Now check for a minimumReleaseAge config
-      const { minimumConfidence, minimumReleaseAge, minimumMinorAge, updateType } =
-        releaseConfig;
+      const {
+        minimumConfidence,
+        minimumReleaseAge,
+        minimumMinorAge,
+        updateType,
+      } = releaseConfig;
 
       const minimumReleaseAgeMs = isNonEmptyString(minimumReleaseAge)
         ? coerceNumber(toMs(minimumReleaseAge), 0)
@@ -159,7 +163,7 @@ export async function filterInternalChecks(
         if (major !== null && minor !== null) {
           const minorKey = `${major}.${minor}`;
           const firstReleaseOfMinor = minorVersionFirstRelease.get(minorKey);
-          
+
           if (firstReleaseOfMinor?.releaseTimestamp) {
             // Check if the first release of this minor version is old enough
             if (

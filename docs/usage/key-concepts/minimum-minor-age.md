@@ -41,11 +41,11 @@ And the following configuration:
 
 ## Key Differences from minimumReleaseAge
 
-| Feature | `minimumReleaseAge` | `minimumMinorAge` |
-|---------|---------------------|-------------------|
-| **What it checks** | Each individual version | First release of each minor version |
-| **Update behavior** | Waits for each version to mature | Waits for minor version to mature, then takes latest patch |
-| **Use case** | Conservative updates to all versions | Conservative minor version adoption, but quick patch updates |
+| Feature             | `minimumReleaseAge`                  | `minimumMinorAge`                                            |
+| ------------------- | ------------------------------------ | ------------------------------------------------------------ |
+| **What it checks**  | Each individual version              | First release of each minor version                          |
+| **Update behavior** | Waits for each version to mature     | Waits for minor version to mature, then takes latest patch   |
+| **Use case**        | Conservative updates to all versions | Conservative minor version adoption, but quick patch updates |
 
 ## Configuration options
 
@@ -77,6 +77,7 @@ For example:
 ```
 
 With this configuration:
+
 - A new minor version must be at least 7 days old before any of its patches are considered
 - Once the minor version has matured, individual patch versions must be at least 3 days old before being suggested
 
