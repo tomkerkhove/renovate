@@ -386,6 +386,7 @@ export async function processBranch(
       config.upgrades.some(
         (upgrade) =>
           isNonEmptyString(upgrade.minimumReleaseAge) ||
+          isNonEmptyString(upgrade.minimumMinorAge) ||
           isActiveConfidenceLevel(upgrade.minimumConfidence!),
       )
     ) {
@@ -446,6 +447,55 @@ export async function processBranch(
             }
           }
         }
+
+        // Now check for minimumMinorAge config
+        const minimumMinorAgeMs = isNonEmptyString(upgrade.minimumMinorAge)
+          ? coerceNumber(toMs(upgrade.minimumMinorAge), 0)
+          : 0;
+
+        if (minimumMinorAgeMs) {
+          const minimumReleaseAgeBehaviour: MinimumReleaseAgeBehaviour =
+            upgrade.minimumReleaseAgeBehaviour ?? 'timestamp-required';
+
+          // For minimumMinorAge, we need to check when the minor version was first released
+          // We can infer this by checking if this is a minor or patch update
+          // For minor updates, use the releaseTimestamp of this version
+          // For patch updates, we would need the timestamp of the first release in the minor series
+          // However, at this point in the code, we only have the current upgrade's timestamp
+          // So we'll use the releaseTimestamp as a proxy for the minor version age
+          if (upgrade.releaseTimestamp) {
+            const timeElapsed = getElapsedMs(upgrade.releaseTimestamp);
+            if (timeElapsed < minimumMinorAgeMs) {
+              logger.debug(
+                {
+                  depName: upgrade.depName,
+                  timeElapsed,
+                  minimumMinorAge: upgrade.minimumMinorAge,
+                },
+                'Update has not passed minimum minor age',
+              );
+              config.stabilityStatus = 'yellow';
+              continue;
+            }
+          } else {
+            // if we're set to `minimumReleaseAgeBehaviour=timestamp-required`, and there isn't a timestamp, always mark the update as pending
+            if (minimumReleaseAgeBehaviour === 'timestamp-required') {
+              depNamesWithoutReleaseTimestamp['timestamp-required'].push({
+                depName: upgrade.depName!,
+                updateType: upgrade.updateType!,
+              });
+              config.stabilityStatus = 'yellow';
+              continue;
+            } else {
+              // if there is no timestamp, and we're running in `optional` mode, we can allow it, but make sure to warn the user
+              depNamesWithoutReleaseTimestamp['timestamp-optional'].push({
+                depName: upgrade.depName!,
+                updateType: upgrade.updateType!,
+              });
+            }
+          }
+        }
+
         const datasource = upgrade.datasource!;
         const depName = upgrade.depName!;
         const packageName = upgrade.packageName!;
