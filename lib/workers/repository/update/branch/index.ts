@@ -386,7 +386,6 @@ export async function processBranch(
       config.upgrades.some(
         (upgrade) =>
           isNonEmptyString(upgrade.minimumReleaseAge) ||
-          isNonEmptyString(upgrade.minimumMinorAge) ||
           isActiveConfidenceLevel(upgrade.minimumConfidence!),
       )
     ) {
