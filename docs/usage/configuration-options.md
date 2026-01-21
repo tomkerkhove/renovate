@@ -2762,6 +2762,25 @@ Example:
 }
 ```
 
+## minimumMinorAge
+
+Time required before a new minor version is considered stable.
+
+`minimumMinorAge` is a feature that requires Renovate to wait for a specified amount of time before suggesting updates to a new minor version.
+
+Unlike [`minimumReleaseAge`](#minimumreleaseage), which waits for each individual version to mature, `minimumMinorAge` waits for the **first release of a minor version** to mature, then allows updates to the latest patch version of that minor.
+
+This is useful when you want to adopt new minor versions conservatively, but once a minor version has proven stable, you want to stay current with the latest patches.
+
+<!-- prettier-ignore -->
+!!! note
+    Read the [Minimum Minor Age](../key-concepts/minimum-minor-age.md) documentation for more details and examples.
+
+For example, with `minimumMinorAge: "7 days"`:
+
+- If minor version `1.1.0` was released on Aug 1st, Renovate will not suggest updates to `1.1.x` until Aug 8th or later
+- Once Aug 8th arrives, Renovate will suggest updating to the latest patch version of `1.1.x` (e.g., `1.1.3`)
+
 ## minimumReleaseAge
 
 `minimumReleaseAge` is a feature that requires Renovate to wait for a specified amount of time before suggesting a dependency update.
