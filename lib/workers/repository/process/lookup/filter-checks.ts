@@ -143,7 +143,12 @@ export async function filterInternalChecks(
         }
       }
 
-      // Now check for a minimumMinorAge config
+      // Check for minimumMinorAge config
+      // Note: minimumMinorAge logic ONLY exists in this filter phase because it needs
+      // access to all releases to determine when the minor version was first released.
+      // The branch processing phase (branch/index.ts) does NOT have this logic because
+      // it only has access to the selected upgrade, not the full release history.
+      // See docs/development/branch-processing-vs-filtering.md for details.
       const minimumMinorAgeMs = isNonEmptyString(minimumMinorAge)
         ? coerceNumber(toMs(minimumMinorAge), 0)
         : 0;

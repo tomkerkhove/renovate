@@ -381,7 +381,12 @@ export async function processBranch(
         'Branch + PR exists but is not scheduled -- will update if necessary',
       );
     }
-    //stability checks
+    // Stability checks
+    // Note: minimumMinorAge is NOT checked here because it requires access to all releases
+    // to determine the first release of a minor version. That filtering happens in
+    // filter-checks.ts where the full release history is available. By the time we reach
+    // this branch processing phase, upgrades have already been filtered by minimumMinorAge.
+    // See docs/development/branch-processing-vs-filtering.md for details.
     if (
       config.upgrades.some(
         (upgrade) =>
