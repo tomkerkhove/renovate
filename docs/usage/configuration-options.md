@@ -2774,7 +2774,7 @@ This is useful when you want to adopt new minor versions conservatively, but onc
 
 <!-- prettier-ignore -->
 !!! note
-    Read the [Minimum Minor Age](../key-concepts/minimum-minor-age.md) documentation for more details and examples.
+    Read the [Minimum Minor Age](./key-concepts/minimum-minor-age.md) documentation for more details and examples.
 
 For example, with `minimumMinorAge: "7 days"`:
 
