@@ -66,6 +66,9 @@ export async function filterInternalChecks(
       }
     }
 
+    // Cache to store whether each minor version is mature (to avoid calling getElapsedMs multiple times)
+    const minorVersionMaturityCache = new Map<string, boolean>();
+
     // iterate through releases from highest to lowest, looking for the first which will pass checks if present
     for (let candidateRelease of sortedReleases.reverse()) {
       // merge the release data into dependency config
@@ -162,14 +165,39 @@ export async function filterInternalChecks(
 
         if (major !== null && minor !== null) {
           const minorKey = `${major}.${minor}`;
-          const firstReleaseOfMinor = minorVersionFirstRelease.get(minorKey);
+          
+          // Check if we've already evaluated this minor version's maturity
+          if (!minorVersionMaturityCache.has(minorKey)) {
+            // Evaluate and cache the result
+            const firstReleaseOfMinor = minorVersionFirstRelease.get(minorKey);
+            let isMature = false;
 
-          if (firstReleaseOfMinor?.releaseTimestamp) {
-            // Check if the first release of this minor version is old enough
-            if (
-              getElapsedMs(firstReleaseOfMinor.releaseTimestamp) <
-              minimumMinorAgeMs
+            if (firstReleaseOfMinor?.releaseTimestamp) {
+              // Check if the first release of this minor version is old enough
+              if (
+                getElapsedMs(firstReleaseOfMinor.releaseTimestamp) >=
+                minimumMinorAgeMs
+              ) {
+                isMature = true;
+              }
+            } else if (
+              isNullOrUndefined(firstReleaseOfMinor?.releaseTimestamp) &&
+              releaseConfig.minimumReleaseAgeBehaviour === 'timestamp-optional'
             ) {
+              // Allow it even without a timestamp when in timestamp-optional mode
+              isMature = true;
+            }
+            
+            minorVersionMaturityCache.set(minorKey, isMature);
+          }
+
+          // Use the cached result
+          const isMinorMature = minorVersionMaturityCache.get(minorKey);
+          
+          if (!isMinorMature) {
+            const firstReleaseOfMinor = minorVersionFirstRelease.get(minorKey);
+            
+            if (firstReleaseOfMinor?.releaseTimestamp) {
               // Skip it if the minor version hasn't matured yet
               logger.trace(
                 { depName, check: 'minimumMinorAge' },
@@ -177,27 +205,18 @@ export async function filterInternalChecks(
               );
               pendingReleases.unshift(candidateRelease);
               continue;
+            } else if (
+              isNullOrUndefined(firstReleaseOfMinor?.releaseTimestamp) &&
+              releaseConfig.minimumReleaseAgeBehaviour === 'timestamp-required'
+            ) {
+              // Skip it if we don't have a timestamp for the first release of this minor version
+              logger.trace(
+                { depName, check: 'minimumMinorAge' },
+                `Release ${candidateRelease.version} is pending - minor version ${minorKey} does not have a releaseTimestamp`,
+              );
+              pendingReleases.unshift(candidateRelease);
+              continue;
             }
-          } else if (
-            isNullOrUndefined(firstReleaseOfMinor?.releaseTimestamp) &&
-            releaseConfig.minimumReleaseAgeBehaviour === 'timestamp-required'
-          ) {
-            // Skip it if we don't have a timestamp for the first release of this minor version
-            logger.trace(
-              { depName, check: 'minimumMinorAge' },
-              `Release ${candidateRelease.version} is pending - minor version ${minorKey} does not have a releaseTimestamp`,
-            );
-            pendingReleases.unshift(candidateRelease);
-            continue;
-          } else if (
-            isNullOrUndefined(firstReleaseOfMinor?.releaseTimestamp) &&
-            releaseConfig.minimumReleaseAgeBehaviour === 'timestamp-optional'
-          ) {
-            // Allow it even without a timestamp
-            logger.trace(
-              { depName, check: 'minimumMinorAge' },
-              `Minor version ${minorKey} does not have a releaseTimestamp, but proceeding with timestamp-optional`,
-            );
           }
         }
       }
