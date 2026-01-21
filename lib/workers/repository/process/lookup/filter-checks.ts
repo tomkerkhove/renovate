@@ -148,7 +148,6 @@ export async function filterInternalChecks(
       // access to all releases to determine when the minor version was first released.
       // The branch processing phase (branch/index.ts) does NOT have this logic because
       // it only has access to the selected upgrade, not the full release history.
-      // See docs/development/branch-processing-vs-filtering.md for details.
       const minimumMinorAgeMs = isNonEmptyString(minimumMinorAge)
         ? coerceNumber(toMs(minimumMinorAge), 0)
         : 0;
