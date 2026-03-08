@@ -53,6 +53,8 @@ export async function filterInternalChecks(
 
     // Build a map of minor version group -> first release timestamp (before reversing)
     // This is used for minimumMinorAge checks
+    // Note: sortedReleases is in ascending version order at this point, so the first
+    // occurrence of each minor key is the earliest version (e.g., x.y.0) in that group
     const minorVersionFirstTimestamp = new Map<
       string,
       string | null | undefined
