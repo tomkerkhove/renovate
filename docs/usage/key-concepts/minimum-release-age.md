@@ -19,6 +19,10 @@ Renovate does not wait until the package has seen no releases for x time-duratio
 When the time passed since the release is _less_ than the set `minimumReleaseAge`: Renovate adds a "pending" status check to that update's branch.
 After enough days have passed: Renovate replaces the "pending" status with a "passing" status check.
 
+<!-- prettier-ignore -->
+!!! tip
+    If you want to wait for a minor version to mature before adopting it, but then quickly get patch updates within that minor version, see [`minimumMinorAge`](./minimum-minor-age.md) instead.
+
 ## Configuration options
 
 The following configuration options can be used to enable and tune the functionality of Minimum Release Age:

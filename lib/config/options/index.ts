@@ -372,6 +372,7 @@ const options: Readonly<RenovateOptions>[] = [
       configValidation: 'renovate/config-validation',
       mergeConfidence: 'renovate/merge-confidence',
       minimumReleaseAge: 'renovate/stability-days',
+      minimumMinorAge: 'renovate/minimum-minor-age',
     },
   },
   {
@@ -2065,6 +2066,13 @@ const options: Readonly<RenovateOptions>[] = [
     type: 'string',
     default: 'timestamp-required',
     allowedValues: ['timestamp-required', 'timestamp-optional'],
+  },
+  {
+    name: 'minimumMinorAge',
+    description:
+      'Time required before a new minor version is considered stable. Only the latest patch version of a matured minor version will be suggested.',
+    type: 'string',
+    default: null,
   },
   {
     name: 'abandonmentThreshold',

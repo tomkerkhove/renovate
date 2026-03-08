@@ -82,8 +82,8 @@ export async function setStability(config: StabilityConfig): Promise<void> {
 
   const description =
     config.stabilityStatus === 'green'
-      ? 'Updates have met minimum release age requirement'
-      : 'Updates have not met minimum release age requirement';
+      ? 'Updates have met stability requirements'
+      : 'Updates have not met stability requirements';
 
   const docsLink = joinUrlParts(
     coerceString(config.productLinks?.documentation),

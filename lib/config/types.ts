@@ -111,6 +111,7 @@ export interface RenovateSharedConfig {
   manager?: string;
   milestone?: number;
   minimumReleaseAge?: Nullish<string>;
+  minimumMinorAge?: Nullish<string>;
   npmrc?: string;
   npmrcMerge?: boolean;
   npmToken?: string;
@@ -326,6 +327,7 @@ export type MinimumReleaseAgeBehaviour =
 
 export const allowedStatusCheckStrings = [
   'minimumReleaseAge',
+  'minimumMinorAge',
   'mergeConfidence',
   'configValidation',
   'artifactError',
