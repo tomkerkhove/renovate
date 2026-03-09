@@ -565,6 +565,40 @@ describe('workers/repository/process/lookup/filter-checks', () => {
         expect(res.pendingReleases).toHaveLength(0);
         expect(res.release?.version).toBe('1.1.1');
       });
+
+      it('blocks minor versions with missing first-release timestamp when minimumReleaseAgeBehaviour=timestamp-required', async () => {
+        dateUtil.getElapsedMs.mockReset();
+        const releasesWithMissingTimestamp: Release[] = [
+          {
+            version: '1.0.1',
+            releaseTimestamp: '2021-01-01T00:00:00.000Z' as Timestamp,
+          },
+          {
+            version: '1.1.0',
+            // no releaseTimestamp for the first release in minor 1.1
+          },
+          {
+            version: '1.1.1',
+            releaseTimestamp: '2021-01-06T00:00:00.000Z' as Timestamp,
+          },
+        ];
+
+        config.currentVersion = '1.0.0';
+        config.internalChecksFilter = 'strict';
+        config.minimumMinorAge = '7 days';
+        config.minimumReleaseAgeBehaviour = 'timestamp-required';
+
+        const res = await filterInternalChecks(
+          config,
+          versioning,
+          'minor',
+          releasesWithMissingTimestamp,
+        );
+        // Both 1.1.1 and 1.1.0 should be pending because 1.1.0 has no timestamp
+        expect(res.pendingChecks).toBeFalse();
+        expect(res.pendingReleases).toHaveLength(2);
+        expect(res.release?.version).toBe('1.0.1');
+      });
     });
   });
 });
