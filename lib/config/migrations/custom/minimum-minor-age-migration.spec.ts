@@ -55,5 +55,12 @@ describe('config/migrations/custom/minimum-minor-age-migration', () => {
       },
       {},
     );
+    // minimumReleaseAge should not be set for non-string minimumMinorAge
+    const { MigrationsService } = await import('../migrations-service.ts');
+    const migrated = MigrationsService.run({
+      minimumMinorAge: 123 as any,
+    });
+    expect(migrated).not.toHaveProperty('minimumMinorAge');
+    expect(migrated).not.toHaveProperty('minimumReleaseAge');
   });
 });

@@ -24,6 +24,9 @@ import { toMs } from '../../../../util/pretty-time.ts';
 import type { LookupUpdateConfig, UpdateResult } from './types.ts';
 import { getUpdateType } from './update-type.ts';
 
+/** Update types that use version-group-based checking (first release in group) */
+const versionGroupUpdateTypes = new Set(['major', 'minor'] as const);
+
 export interface InternalChecksResult {
   release?: Release;
   pendingChecks: boolean;
@@ -59,8 +62,11 @@ function resolveMinimumReleaseAge(
       : 0;
 
     let groupMs = 0;
-    if (updateType === 'major' || updateType === 'minor') {
-      const typeValue = config[updateType];
+    if (
+      updateType !== undefined &&
+      versionGroupUpdateTypes.has(updateType as 'major' | 'minor')
+    ) {
+      const typeValue = config[updateType as 'major' | 'minor'];
       if (typeValue) {
         groupMs = coerceNumber(toMs(typeValue), 0);
       }

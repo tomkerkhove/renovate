@@ -2837,7 +2837,7 @@ And the following configuration:
 ```
 
 - **Run on August 2nd:** Renovate will keep the repo on `1.0.0`, because the minor version `1.1` was introduced on August 1st (only 1 day ago), which does not meet the 7-day threshold.
-- **Run on August 9th:** Renovate will suggest upgrading to `1.1.3`, because the minor version `1.1` was introduced on August 1st (8 days ago), which meets the 7-day threshold, and `1.1.3` is the latest patch in that minor line. Additionally, `1.1.3` itself is 1 day old, which is below the 3-day `default` threshold, so Renovate will actually suggest `1.1.1` (released August 2nd, 7 days ago).
+- **Run on August 9th:** Renovate will suggest upgrading to `1.1.1` (released August 2nd, 7 days ago). Although `1.1.3` is the latest patch and the minor version `1.1` is old enough (8 days), `1.1.3` itself was released only 1 day ago, which is below the 3-day `default` threshold. Both checks must pass, so `1.1.1` is the latest release satisfying both conditions.
 
 <!-- prettier-ignore -->
 !!! note
