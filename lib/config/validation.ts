@@ -631,10 +631,14 @@ export async function validateConfig(
           }
         } else if (type === 'string') {
           if (!isString(val)) {
-            errors.push({
-              topic: 'Configuration Error',
-              message: `Configuration option \`${currentPath}\` should be a string`,
-            });
+            if (option?.allowObject && isPlainObject(val)) {
+              // Allow object values for options like minimumReleaseAge
+            } else {
+              errors.push({
+                topic: 'Configuration Error',
+                message: `Configuration option \`${currentPath}\` should be a string`,
+              });
+            }
           }
         } else if (
           type === 'object' &&

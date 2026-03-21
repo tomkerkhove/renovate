@@ -2777,11 +2777,44 @@ Example:
 }
 ```
 
-## minimumMinorAge
+## minimumReleaseAge
 
-`minimumMinorAge` allows you to defer adopting new minor versions for a specified period.
-Unlike `minimumReleaseAge`, which checks the age of each individual release, `minimumMinorAge` checks the age of the **first release in the minor version group** (for example, `x.y.0`).
-Once the minor version is considered mature, Renovate will suggest upgrading to the latest patch within that minor version.
+`minimumReleaseAge` is a feature that requires Renovate to wait for a specified amount of time before suggesting a dependency update.
+
+It accepts either a duration string or an object with per-update-type overrides.
+
+### String form
+
+The simplest form is a duration string:
+
+```json
+{
+  "minimumReleaseAge": "3 days"
+}
+```
+
+This checks the age of each individual release before suggesting an update.
+
+### Object form
+
+You can use an object to specify different minimum ages for different update types:
+
+```json
+{
+  "minimumReleaseAge": {
+    "default": "3 days",
+    "minor": "6 days",
+    "major": "14 days"
+  }
+}
+```
+
+- `default`: The default minimum release age for all update types (checks individual release age)
+- `minor`: For minor updates, checks the age of the **first release in the minor version group** (e.g., `x.y.0`)
+- `major`: For major updates, checks the age of the **first release in the major version group**
+- `patch`: For patch updates, overrides the default (checks individual release age)
+
+When both `default` and a type-specific key are set, both checks must pass.
 
 For example, given the following releases:
 
@@ -2796,30 +2829,19 @@ And the following configuration:
 
 ```json
 {
-  "packageRules": [
-    {
-      "matchDatasources": ["npm"],
-      "minimumMinorAge": "7 days"
-    }
-  ]
+  "minimumReleaseAge": {
+    "default": "3 days",
+    "minor": "7 days"
+  }
 }
 ```
 
 - **Run on August 2nd:** Renovate will keep the repo on `1.0.0`, because the minor version `1.1` was introduced on August 1st (only 1 day ago), which does not meet the 7-day threshold.
-- **Run on August 9th:** Renovate will suggest upgrading to `1.1.3`, because the minor version `1.1` was introduced on August 1st (8 days ago), which meets the 7-day threshold, and `1.1.3` is the latest patch in that minor line.
-
-`minimumMinorAge` can be used alongside `minimumReleaseAge`.
-When both are configured, both checks must pass for a release to be suggested.
-
-`minimumMinorAge` respects the [`minimumReleaseAgeBehaviour`](#minimumreleaseagebehaviour) setting for handling missing timestamps.
+- **Run on August 9th:** Renovate will suggest upgrading to `1.1.3`, because the minor version `1.1` was introduced on August 1st (8 days ago), which meets the 7-day threshold, and `1.1.3` is the latest patch in that minor line. Additionally, `1.1.3` itself is 1 day old, which is below the 3-day `default` threshold, so Renovate will actually suggest `1.1.1` (released August 2nd, 7 days ago).
 
 <!-- prettier-ignore -->
 !!! note
     For more in-depth documentation about release age checks, see the [Minimum Release Age](./key-concepts/minimum-release-age.md) page.
-
-## minimumReleaseAge
-
-`minimumReleaseAge` is a feature that requires Renovate to wait for a specified amount of time before suggesting a dependency update.
 
 <!-- prettier-ignore -->
 !!! note
