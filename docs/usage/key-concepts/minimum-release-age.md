@@ -32,7 +32,7 @@ The following configuration options can be used to enable and tune the functiona
 `minimumReleaseAge` supports an object form that allows you to specify different minimum ages for different update types.
 This is especially useful for deferring adoption of new _minor_ or _major_ versions.
 
-When using the object form with `minor` or `major` keys, Renovate checks the age of the **first release in the version group** (e.g., `x.y.0` for minor) rather than each individual release.
+When using the object form with `delayMinor` or `delayMajor` keys, Renovate checks the age of the **first release in the version group** (e.g., `x.y.0` for minor) rather than each individual release.
 Once the version group is considered mature, Renovate will suggest upgrading to the **latest patch** within that version.
 
 ### Example
@@ -52,7 +52,7 @@ And the following configuration:
 {
   "minimumReleaseAge": {
     "default": "3 days",
-    "minor": "7 days"
+    "delayMinor": "7 days"
   }
 }
 ```

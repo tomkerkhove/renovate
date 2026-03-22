@@ -337,7 +337,7 @@ describe('workers/repository/process/lookup/filter-checks', () => {
       expect(res.release?.version).toBe('1.0.1');
     });
 
-    describe('minimumReleaseAge object form with minor key', () => {
+    describe('minimumReleaseAge object form with delayMinor key', () => {
       const minorReleases: Release[] = [
         {
           version: '1.0.1',
@@ -373,7 +373,7 @@ describe('workers/repository/process/lookup/filter-checks', () => {
 
         config.currentVersion = '1.0.0';
         config.internalChecksFilter = 'strict';
-        config.minimumReleaseAge = { minor: '7 days' };
+        config.minimumReleaseAge = { delayMinor: '7 days' };
 
         const res = await filterInternalChecks(
           config,
@@ -393,7 +393,7 @@ describe('workers/repository/process/lookup/filter-checks', () => {
 
         config.currentVersion = '1.0.0';
         config.internalChecksFilter = 'strict';
-        config.minimumReleaseAge = { minor: '7 days' };
+        config.minimumReleaseAge = { delayMinor: '7 days' };
 
         const res = await filterInternalChecks(
           config,
@@ -439,7 +439,7 @@ describe('workers/repository/process/lookup/filter-checks', () => {
 
         config.currentVersion = '1.0.0';
         config.internalChecksFilter = 'strict';
-        config.minimumReleaseAge = { minor: '7 days' };
+        config.minimumReleaseAge = { delayMinor: '7 days' };
 
         const res = await filterInternalChecks(
           config,
@@ -458,7 +458,7 @@ describe('workers/repository/process/lookup/filter-checks', () => {
 
         config.currentVersion = '1.1.0';
         config.internalChecksFilter = 'strict';
-        config.minimumReleaseAge = { minor: '7 days' };
+        config.minimumReleaseAge = { delayMinor: '7 days' };
 
         const patchReleases: Release[] = [
           {
@@ -493,7 +493,7 @@ describe('workers/repository/process/lookup/filter-checks', () => {
 
         config.currentVersion = '1.0.0';
         config.internalChecksFilter = 'strict';
-        config.minimumReleaseAge = { default: '3 days', minor: '7 days' };
+        config.minimumReleaseAge = { default: '3 days', delayMinor: '7 days' };
 
         const res = await filterInternalChecks(
           config,
@@ -519,7 +519,7 @@ describe('workers/repository/process/lookup/filter-checks', () => {
         config.packageRules = [
           {
             matchUpdateTypes: ['minor'],
-            minimumReleaseAge: { minor: '7 days' } as any,
+            minimumReleaseAge: { delayMinor: '7 days' } as any,
           },
         ];
 
@@ -552,7 +552,7 @@ describe('workers/repository/process/lookup/filter-checks', () => {
 
         config.currentVersion = '1.0.0';
         config.internalChecksFilter = 'strict';
-        config.minimumReleaseAge = { minor: '7 days' };
+        config.minimumReleaseAge = { delayMinor: '7 days' };
 
         const res = await filterInternalChecks(
           config,
@@ -583,7 +583,7 @@ describe('workers/repository/process/lookup/filter-checks', () => {
 
         config.currentVersion = '1.0.0';
         config.internalChecksFilter = 'strict';
-        config.minimumReleaseAge = { minor: '7 days' };
+        config.minimumReleaseAge = { delayMinor: '7 days' };
         config.minimumReleaseAgeBehaviour = 'timestamp-required';
 
         const res = await filterInternalChecks(

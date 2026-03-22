@@ -14,18 +14,18 @@ export class MinimumMinorAgeMigration extends AbstractMigration {
         // Convert existing string + minimumMinorAge to object form
         this.setHard('minimumReleaseAge', {
           default: existingMinimumReleaseAge,
-          minor: value,
+          delayMinor: value,
         } satisfies MinimumReleaseAgeConfig);
       } else if (isPlainObject(existingMinimumReleaseAge)) {
         // Merge into existing object form
         this.setHard('minimumReleaseAge', {
           ...existingMinimumReleaseAge,
-          minor: value,
+          delayMinor: value,
         });
       } else if (isNullOrUndefined(existingMinimumReleaseAge)) {
-        // No existing minimumReleaseAge, just set minor
+        // No existing minimumReleaseAge, just set delayMinor
         this.setHard('minimumReleaseAge', {
-          minor: value,
+          delayMinor: value,
         } satisfies MinimumReleaseAgeConfig);
       }
     }

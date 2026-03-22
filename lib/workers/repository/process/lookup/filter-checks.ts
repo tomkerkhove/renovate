@@ -24,8 +24,11 @@ import { toMs } from '../../../../util/pretty-time.ts';
 import type { LookupUpdateConfig, UpdateResult } from './types.ts';
 import { getUpdateType } from './update-type.ts';
 
-/** Update types that use version-group-based checking (first release in group) */
-const versionGroupUpdateTypes = new Set(['major', 'minor'] as const);
+/** Map from update type to the corresponding delay key in MinimumReleaseAgeConfig */
+const updateTypeToDelayKey = new Map<string, keyof MinimumReleaseAgeConfig>([
+  ['major', 'delayMajor'],
+  ['minor', 'delayMinor'],
+]);
 
 export interface InternalChecksResult {
   release?: Release;
@@ -36,13 +39,13 @@ export interface InternalChecksResult {
 interface ResolvedMinimumReleaseAge {
   /** Minimum age for the individual release (from default/string form) */
   releaseMs: number;
-  /** Minimum age for the first release in the version group (from major/minor keys) */
+  /** Minimum age for the first release in the version group (from delayMajor/delayMinor keys) */
   groupMs: number;
 }
 
 /**
  * Resolves the effective minimum release age configuration.
- * Supports both string form ("3 days") and object form ({ default: "3 days", minor: "6 days" }).
+ * Supports both string form ("3 days") and object form ({ default: "3 days", delayMinor: "6 days" }).
  */
 function resolveMinimumReleaseAge(
   minimumReleaseAge: string | MinimumReleaseAgeConfig | null | undefined,
@@ -62,20 +65,20 @@ function resolveMinimumReleaseAge(
       : 0;
 
     let groupMs = 0;
-    if (
-      updateType !== undefined &&
-      versionGroupUpdateTypes.has(updateType as 'major' | 'minor')
-    ) {
-      const typeValue = config[updateType as 'major' | 'minor'];
-      if (typeValue) {
-        groupMs = coerceNumber(toMs(typeValue), 0);
+    if (updateType !== undefined) {
+      const delayKey = updateTypeToDelayKey.get(updateType);
+      if (delayKey) {
+        const typeValue = config[delayKey];
+        if (typeValue) {
+          groupMs = coerceNumber(toMs(typeValue), 0);
+        }
+      } else if (updateType === 'patch' && config.delayPatch) {
+        // For patch, the type-specific value overrides the default for individual release age
+        return {
+          releaseMs: coerceNumber(toMs(config.delayPatch), 0),
+          groupMs: 0,
+        };
       }
-    } else if (updateType === 'patch' && config.patch) {
-      // For patch, the type-specific value overrides the default for individual release age
-      return {
-        releaseMs: coerceNumber(toMs(config.patch), 0),
-        groupMs: 0,
-      };
     }
 
     return { releaseMs, groupMs };

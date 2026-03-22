@@ -47,9 +47,9 @@ export type BinarySource = 'docker' | 'global' | 'install' | 'hermit';
 
 export interface MinimumReleaseAgeConfig {
   default?: string;
-  major?: string;
-  minor?: string;
-  patch?: string;
+  delayMajor?: string;
+  delayMinor?: string;
+  delayPatch?: string;
 }
 
 // TODO: Proper typings

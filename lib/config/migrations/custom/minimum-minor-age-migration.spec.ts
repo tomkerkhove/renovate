@@ -8,7 +8,7 @@ describe('config/migrations/custom/minimum-minor-age-migration', () => {
       },
       {
         minimumReleaseAge: {
-          minor: '7 days',
+          delayMinor: '7 days',
         },
       },
     );
@@ -23,7 +23,7 @@ describe('config/migrations/custom/minimum-minor-age-migration', () => {
       {
         minimumReleaseAge: {
           default: '3 days',
-          minor: '7 days',
+          delayMinor: '7 days',
         },
       },
     );
@@ -34,15 +34,15 @@ describe('config/migrations/custom/minimum-minor-age-migration', () => {
       {
         minimumReleaseAge: {
           default: '3 days',
-          major: '14 days',
+          delayMajor: '14 days',
         },
         minimumMinorAge: '7 days',
       },
       {
         minimumReleaseAge: {
           default: '3 days',
-          major: '14 days',
-          minor: '7 days',
+          delayMajor: '14 days',
+          delayMinor: '7 days',
         },
       },
     );
@@ -58,8 +58,8 @@ describe('config/migrations/custom/minimum-minor-age-migration', () => {
     // minimumReleaseAge should not be set for non-string minimumMinorAge
     const { MigrationsService } = await import('../migrations-service.ts');
     const migrated = MigrationsService.run({
-      minimumMinorAge: 123 as any,
-    });
+      minimumMinorAge: 123,
+    } as any);
     expect(migrated).not.toHaveProperty('minimumMinorAge');
     expect(migrated).not.toHaveProperty('minimumReleaseAge');
   });

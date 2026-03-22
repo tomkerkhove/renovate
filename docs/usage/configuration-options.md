@@ -2795,16 +2795,16 @@ You can use an object to specify different minimum ages for different update typ
 {
   "minimumReleaseAge": {
     "default": "3 days",
-    "minor": "6 days",
-    "major": "14 days"
+    "delayMinor": "6 days",
+    "delayMajor": "14 days"
   }
 }
 ```
 
 - `default`: The default minimum release age for all update types (checks individual release age)
-- `minor`: For minor updates, checks the age of the **first release in the minor version group** (e.g., `x.y.0`)
-- `major`: For major updates, checks the age of the **first release in the major version group**
-- `patch`: For patch updates, overrides the default (checks individual release age)
+- `delayMinor`: For minor updates, checks the age of the **first release in the minor version group** (e.g., `x.y.0`)
+- `delayMajor`: For major updates, checks the age of the **first release in the major version group**
+- `delayPatch`: For patch updates, overrides the default (checks individual release age)
 
 When both `default` and a type-specific key are set, both checks must pass.
 
@@ -2823,7 +2823,7 @@ And the following configuration:
 {
   "minimumReleaseAge": {
     "default": "3 days",
-    "minor": "7 days"
+    "delayMinor": "7 days"
   }
 }
 ```
