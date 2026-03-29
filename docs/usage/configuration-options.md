@@ -2775,6 +2775,8 @@ Example:
 
 It accepts either a duration string or an object with per-update-type overrides.
 
+<!-- markdownlint-disable MD001 -->
+
 #### String form
 
 The simplest form is a duration string:
@@ -2866,8 +2868,6 @@ You can confirm if your datasource supports the release timestamp by viewing [th
     As of Renovate 42.19.5, using `minimumReleaseAge=0 days` is treated the same as `minimumReleaseAge=null`.
 
 Examples of how you can use `minimumReleaseAge`:
-
-<!-- markdownlint-disable MD001 -->
 
 #### Suppress branch/PR creation for X days
 
