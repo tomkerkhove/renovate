@@ -2789,7 +2789,7 @@ The simplest form is a duration string:
 
 This checks the age of each individual release before suggesting an update.
 
-### Object form
+#### Object form
 
 You can use an object to specify different minimum ages for different update types:
 

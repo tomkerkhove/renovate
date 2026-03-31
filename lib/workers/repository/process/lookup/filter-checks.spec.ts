@@ -598,5 +598,148 @@ describe('workers/repository/process/lookup/filter-checks', () => {
         expect(res.release?.version).toBe('1.0.1');
       });
     });
+
+    describe('minimumReleaseAge object form with delayMajor key', () => {
+      const majorReleases: Release[] = [
+        {
+          version: '1.0.1',
+          releaseTimestamp: '2021-01-01T00:00:00.000Z' as Timestamp,
+        },
+        {
+          version: '2.0.0',
+          releaseTimestamp: '2021-01-05T00:00:00.000Z' as Timestamp,
+        },
+        {
+          version: '2.0.1',
+          releaseTimestamp: '2021-01-06T00:00:00.000Z' as Timestamp,
+        },
+        {
+          version: '2.1.0',
+          releaseTimestamp: '2021-01-08T00:00:00.000Z' as Timestamp,
+        },
+      ];
+
+      beforeEach(() => {
+        dateUtil.getElapsedMs.mockReset();
+      });
+
+      it('blocks new major versions that are not old enough', async () => {
+        // Loop order (highest to lowest): 2.1.0, 2.0.1, 2.0.0, 1.0.1
+        // For 2.1.0: version group check against 2.0.0 timestamp → 1 day (too young)
+        dateUtil.getElapsedMs.mockReturnValueOnce(toMs('1 day') ?? 0);
+        // For 2.0.1: version group check against 2.0.0 timestamp → 1 day (too young)
+        dateUtil.getElapsedMs.mockReturnValueOnce(toMs('1 day') ?? 0);
+        // For 2.0.0: version group check against 2.0.0 timestamp → 1 day (too young)
+        dateUtil.getElapsedMs.mockReturnValueOnce(toMs('1 day') ?? 0);
+        // For 1.0.1: same major as current (1) → no check needed
+
+        config.currentVersion = '1.0.0';
+        config.internalChecksFilter = 'strict';
+        config.minimumReleaseAge = { delayMajor: '7 days' };
+
+        const res = await filterInternalChecks(
+          config,
+          versioning,
+          'major',
+          clone(majorReleases),
+        );
+        expect(res.pendingChecks).toBeFalse();
+        expect(res.pendingReleases).toHaveLength(3);
+        expect(res.release?.version).toBe('1.0.1');
+      });
+
+      it('allows major versions that are old enough', async () => {
+        // For 2.1.0: version group check against 2.0.0 → 8 days (old enough)
+        dateUtil.getElapsedMs.mockReturnValueOnce(toMs('8 days') ?? 0);
+
+        config.currentVersion = '1.0.0';
+        config.internalChecksFilter = 'strict';
+        config.minimumReleaseAge = { delayMajor: '7 days' };
+
+        const res = await filterInternalChecks(
+          config,
+          versioning,
+          'major',
+          clone(majorReleases),
+        );
+        expect(res.pendingChecks).toBeFalse();
+        expect(res.pendingReleases).toHaveLength(0);
+        expect(res.release?.version).toBe('2.1.0');
+      });
+
+      it('blocks major versions with missing first-release timestamp when minimumReleaseAgeBehaviour=timestamp-required', async () => {
+        const releasesWithMissingTimestamp: Release[] = [
+          {
+            version: '1.0.1',
+            releaseTimestamp: '2021-01-01T00:00:00.000Z' as Timestamp,
+          },
+          {
+            version: '2.0.0',
+            // no releaseTimestamp for the first release in major 2
+          },
+          {
+            version: '2.0.1',
+            releaseTimestamp: '2021-01-06T00:00:00.000Z' as Timestamp,
+          },
+        ];
+
+        config.currentVersion = '1.0.0';
+        config.internalChecksFilter = 'strict';
+        config.minimumReleaseAge = { delayMajor: '7 days' };
+        config.minimumReleaseAgeBehaviour = 'timestamp-required';
+
+        const res = await filterInternalChecks(
+          config,
+          versioning,
+          'major',
+          releasesWithMissingTimestamp,
+        );
+        expect(res.pendingChecks).toBeFalse();
+        expect(res.pendingReleases).toHaveLength(2);
+        expect(res.release?.version).toBe('1.0.1');
+      });
+    });
+
+    describe('minimumReleaseAge object form with delayPatch key', () => {
+      beforeEach(() => {
+        dateUtil.getElapsedMs.mockReset();
+      });
+
+      it('applies delayPatch to patch updates', async () => {
+        const patchReleases: Release[] = [
+          {
+            version: '1.0.1',
+            releaseTimestamp: '2021-01-01T00:00:00.000Z' as Timestamp,
+          },
+          {
+            version: '1.0.2',
+            releaseTimestamp: '2021-01-05T00:00:00.000Z' as Timestamp,
+          },
+          {
+            version: '1.0.3',
+            releaseTimestamp: '2021-01-08T00:00:00.000Z' as Timestamp,
+          },
+        ];
+        // Loop order: 1.0.3, 1.0.2, 1.0.1
+        // For 1.0.3: individual release check → 2 days (too young, needs 3 days)
+        dateUtil.getElapsedMs.mockReturnValueOnce(toMs('2 days') ?? 0);
+        // For 1.0.2: individual release check → 5 days (old enough)
+        dateUtil.getElapsedMs.mockReturnValueOnce(toMs('5 days') ?? 0);
+
+        config.currentVersion = '1.0.0';
+        config.internalChecksFilter = 'strict';
+        config.minimumReleaseAge = { delayPatch: '3 days' };
+
+        const res = await filterInternalChecks(
+          config,
+          versioning,
+          'patch',
+          patchReleases,
+        );
+        expect(res.pendingChecks).toBeFalse();
+        expect(res.pendingReleases).toHaveLength(1);
+        expect(res.release?.version).toBe('1.0.2');
+      });
+    });
   });
 });
